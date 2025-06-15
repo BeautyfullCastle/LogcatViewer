@@ -33,17 +33,15 @@
 * **.NET 8**
 * **WPF (Windows Presentation Foundation)**
 
-## ⚙️ 설정 및 실행 방법 (Setup & Run)
+## ⚙️ 실행파일 생성 방법 (How to build exe)
 
-1.  이 프로젝트를 컴퓨터에 복제(Clone)합니다.
-2.  프로젝트의 루트 폴더에 아래와 같이 두 개의 폴더를 생성합니다.
-    * `adb`
-    * `aapt`
-3.  `adb` 폴더에는 안드로이드 플랫폼 도구(Platform-Tools)에서 아래 파일들을 복사해 넣습니다.
-    * `adb.exe`
-    * `AdbWinApi.dll`
-    * `AdbWinUsbApi.dll`
-4.  `aapt` 폴더에는 안드로이드 빌드 도구(Build-Tools)에서 아래 파일들을 복사해 넣습니다.
-    * `aapt2.exe`
-    * `libwinpthread-1.dll` (또는 `aapt2.exe` 실행에 필요한 다른 `.dll` 파일)
-5.  Visual Studio 또는 JetBrains Rider로 솔루션(`.sln`) 파일을 열고 빌드(Build) 및 실행(Run)합니다.
+1. 솔루션이 있는 폴더에서 터미널 실행
+2. 아래 커맨드 실행
+
+* ```dotnet publish -c Release -r win-x64 --self-contained true```
+
+***.Net 8 SDK 필요***
+
+3. 아래 경로 확인 및 'LogCatViewer.exe' 실행
+
+* ```.\LogCatViewer\bin\Release\net8.0-windows\win-x64\publish```
