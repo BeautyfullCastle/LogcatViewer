@@ -17,10 +17,11 @@ namespace LogcatViewer
                 // '자동 스크롤'을 켰을 때
                 if (_renderingEventHandler == null)
                 {
+                    // 1. 렌더링 이벤트 핸들러를 연결합니다.
                     _renderingEventHandler = (s, args) =>
                     {
+                        // 현재 선택된 탭의 ListView를 찾아서 맨 아래로 내립니다.
                         if (DeviceTabs.SelectedItem is LogcatManager manager &&
-                            manager.IsUserAtBottom &&
                             _managerToListViewMap.TryGetValue(manager, out var lv))
                         {
                             var sv = FindVisualChild<ScrollViewer>(lv);
@@ -29,10 +30,18 @@ namespace LogcatViewer
                     };
                     CompositionTarget.Rendering += _renderingEventHandler;
                 }
+                
+                // 2. 현재 탭을 즉시 맨 아래로 스크롤합니다.
+                if (DeviceTabs.SelectedItem is LogcatManager selectedManager &&
+                    _managerToListViewMap.TryGetValue(selectedManager, out var listView))
+                {
+                    var scrollViewer = FindVisualChild<ScrollViewer>(listView);
+                    scrollViewer?.ScrollToEnd();
+                }
             }
             else
             {
-                // '자동 스크롤'을 껐을 때, 연결했던 렌더링 이벤트 핸들러를 제거
+                // '자동 스크롤'을 껐을 때, 연결했던 렌더링 이벤트 핸들러를 제거합니다.
                 if (_renderingEventHandler != null)
                 {
                     CompositionTarget.Rendering -= _renderingEventHandler;
@@ -52,10 +61,17 @@ namespace LogcatViewer
             if (scrollViewer != null)
             {
                 scrollViewer.ScrollChanged += (s, args) => {
-                    if (args.ExtentHeight <= args.ViewportHeight || args.VerticalOffset >= args.ExtentHeight - args.ViewportHeight - 5) {
-                        manager.IsUserAtBottom = true;
-                    } else {
-                        manager.IsUserAtBottom = false;
+                    // 사용자가 스크롤을 '위로' 올렸을 때 (e.VerticalChange가 음수일 때)
+                    // 그리고 자동 스크롤이 켜져 있을 때만 반응합니다.
+                    if (args.VerticalChange < 0 && AutoScrollToggle.IsChecked == true)
+                    {
+                        // 자동 스크롤 체크를 풀어버리고, 렌더링 이벤트도 해제합니다.
+                        AutoScrollToggle.IsChecked = false;
+                        if (_renderingEventHandler != null)
+                        {
+                            CompositionTarget.Rendering -= _renderingEventHandler;
+                            _renderingEventHandler = null;
+                        }
                     }
                 };
             }

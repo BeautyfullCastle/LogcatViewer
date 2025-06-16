@@ -16,13 +16,17 @@ namespace LogcatViewer
     {
         public ObservableCollection<LogEntry> LogEntries { get; } = new ObservableCollection<LogEntry>();
         public string DeviceSerial => _deviceSerial;
-        public bool IsUserAtBottom { get; set; } = true;
 
         private ApkInstallState _apkInstallState;
         public ApkInstallState ApkInstallState
         {
             get => _apkInstallState;
-            set { if (_apkInstallState == value) return; _apkInstallState = value; OnPropertyChanged(); }
+            set
+            {
+                if (_apkInstallState == value) return;
+                _apkInstallState = value;
+                OnPropertyChanged();
+            }
         }
 
         private readonly string _deviceSerial;
