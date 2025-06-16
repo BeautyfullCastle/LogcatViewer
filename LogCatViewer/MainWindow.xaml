@@ -39,8 +39,8 @@
             <CheckBox x:Name="AutoScrollToggle" Content="자동 스크롤" IsChecked="True" VerticalAlignment="Center" Click="AutoScrollToggle_Click"/>
             <Separator />
             <Label Content="검색:" />
-            <TextBox x:Name="SearchTextBox" Width="200" />
-            <Button x:Name="ClearSearchButton" Content="X" />
+            <TextBox x:Name="SearchTextBox" Width="200" TextChanged="SearchTextBox_TextChanged"/>
+            <Button x:Name="ClearSearchButton" Content="X" Click="ClearSearchButton_Click"/>
         </ToolBar>
 
         <TabControl x:Name="DeviceTabs">
@@ -96,35 +96,15 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}" Padding="2">
-                                    <Expander.Header>
-                                        <TextBlock>
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Level}" Value="E">
-                                                            <Setter Property="Foreground" Value="Red" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Level}" Value="W">
-                                                            <Setter Property="Foreground" Value="#E59400" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                            <Run Text="{Binding Time}"/> <Run Text=" "/>
-                                            <Run Text="{Binding PID, Mode=OneTime}"/> <Run Text=" "/>
-                                            <Run Text="{Binding TID, Mode=OneTime}"/> <Run Text=" "/>
-                                            <Run Text="{Binding Level}" FontWeight="Bold"/> <Run Text=" "/>
-                                            <Run Text="{Binding Tag, Mode=OneTime}"/> <Run Text=": "/>
-                                            <Run Text="{Binding Message}"/>
-                                        </TextBlock>
-                                    </Expander.Header>
-                                    <Expander.Content>
-                                        <ItemsControl ItemsSource="{Binding AdditionalLines}" Margin="20,5,0,0" FontFamily="Consolas"/>
-                                    </Expander.Content>
-                                    
                                     <Expander.Style>
                                         <Style TargetType="Expander">
                                             <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Level}" Value="E">
+                                                    <Setter Property="Foreground" Value="Red" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Level}" Value="W">
+                                                    <Setter Property="Foreground" Value="#E59400" />
+                                                </DataTrigger>
                                                 <DataTrigger Binding="{Binding HasAdditionalLines}" Value="False">
                                                     <Setter Property="Template">
                                                         <Setter.Value>
@@ -137,6 +117,26 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Expander.Style>
+                                    
+                                    <Expander.Header>
+                                        <TextBlock>
+                                            <Run Text="{Binding Time}"/>
+                                            <Run Text=" "/>
+                                            <Run Text="{Binding PID, Mode=OneTime}"/>
+                                            <Run Text=" "/>
+                                            <Run Text="{Binding TID, Mode=OneTime}"/>
+                                            <Run Text=" "/>
+                                            <Run Text="{Binding Level}" FontWeight="Bold"/>
+                                            <Run Text=" "/>
+                                            <Run Text="{Binding Tag, Mode=OneTime}"/>
+                                            <Run Text=": "/>
+                                            <Run Text="{Binding Message}"/>
+                                        </TextBlock>
+                                    </Expander.Header>
+                                    
+                                    <Expander.Content>
+                                        <ItemsControl ItemsSource="{Binding AdditionalLines}" Margin="20,5,0,0" FontFamily="Consolas"/>
+                                    </Expander.Content>
                                 </Expander>
                             </DataTemplate>
                         </ListView.ItemTemplate>
