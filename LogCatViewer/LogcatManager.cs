@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace LogcatViewer
@@ -29,6 +30,10 @@ namespace LogcatViewer
             }
         }
 
+        public static ListView? ListView { get; set; }
+        
+        public static ScrollViewer? ScrollViewer { get; set; }
+        
         private readonly string _deviceSerial;
         private Process _logcatProcess;
         private readonly List<LogEntry> _logBuffer = new List<LogEntry>();

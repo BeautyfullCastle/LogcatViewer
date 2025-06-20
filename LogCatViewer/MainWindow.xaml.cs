@@ -11,12 +11,11 @@ namespace LogcatViewer
 {
     public partial class MainWindow : Window
     {
-        public static readonly RoutedUICommand CopyLogCommand = new RoutedUICommand(
+        public static readonly RoutedUICommand CopyLogCommand = new(
             "Copy Log", "CopyLogCommand", typeof(MainWindow));
 
         private readonly DispatcherTimer _deviceCheckTimer;
-        private readonly ObservableCollection<LogcatManager> _logcatManagers = new ObservableCollection<LogcatManager>();
-        private readonly Dictionary<LogcatManager, ListView> _managerToListViewMap = new Dictionary<LogcatManager, ListView>();
+        private readonly ObservableCollection<LogcatManager> _logcatManagers = new();
         
         private EventHandler _renderingEventHandler;
 
@@ -34,6 +33,7 @@ namespace LogcatViewer
             ErrorToggle.Click += (s, e) => ApplyFilter();
             DeviceTabs.SelectionChanged += (s, e) => 
             {
+                LogcatManager.ScrollViewer?.ScrollToBottom();
                 ApplyFilter();
                 SearchTextBox_TextChanged(SearchTextBox, null);
             };

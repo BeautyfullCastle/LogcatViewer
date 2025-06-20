@@ -20,24 +20,12 @@ namespace LogcatViewer
                     // 1. 렌더링 이벤트 핸들러를 연결합니다.
                     _renderingEventHandler = (s, args) =>
                     {
-                        // 현재 선택된 탭의 ListView를 찾아서 맨 아래로 내립니다.
-                        if (DeviceTabs.SelectedItem is LogcatManager manager &&
-                            _managerToListViewMap.TryGetValue(manager, out var lv))
-                        {
-                            var sv = FindVisualChild<ScrollViewer>(lv);
-                            sv?.ScrollToEnd();
-                        }
+                        LogcatManager.ScrollViewer?.ScrollToBottom();
                     };
                     CompositionTarget.Rendering += _renderingEventHandler;
                 }
                 
-                // 2. 현재 탭을 즉시 맨 아래로 스크롤합니다.
-                if (DeviceTabs.SelectedItem is LogcatManager selectedManager &&
-                    _managerToListViewMap.TryGetValue(selectedManager, out var listView))
-                {
-                    var scrollViewer = FindVisualChild<ScrollViewer>(listView);
-                    scrollViewer?.ScrollToEnd();
-                }
+                LogcatManager.ScrollViewer?.ScrollToBottom();
             }
             else
             {
@@ -56,8 +44,9 @@ namespace LogcatViewer
             var manager = listView?.DataContext as LogcatManager;
             if (manager == null) return;
 
-            _managerToListViewMap[manager] = listView;
+            LogcatManager.ListView = listView;
             var scrollViewer = FindVisualChild<ScrollViewer>(listView);
+            LogcatManager.ScrollViewer = scrollViewer;
             if (scrollViewer != null)
             {
                 scrollViewer.ScrollChanged += (s, args) => {
@@ -79,12 +68,8 @@ namespace LogcatViewer
         
         private void LogListView_Unloaded(object sender, RoutedEventArgs e)
         {
-            var listView = sender as ListView;
-            var manager = listView?.DataContext as LogcatManager;
-            if (manager != null && _managerToListViewMap.ContainsKey(manager))
-            {
-                _managerToListViewMap.Remove(manager);
-            }
+            LogcatManager.ListView = null;
+            LogcatManager.ScrollViewer = null;
         }
 
         private void ClearLogButton_Click(object sender, RoutedEventArgs e)
@@ -97,11 +82,10 @@ namespace LogcatViewer
         
         private void CopyCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (DeviceTabs.SelectedItem is not LogcatManager selectedManager) return;
-            if (!_managerToListViewMap.TryGetValue(selectedManager, out var listView) || listView == null) return;
-            if (listView.SelectedItems.Count == 0) return;
+            if (LogcatManager.ListView == null) return;
+            if (LogcatManager.ListView.SelectedItems.Count == 0) return;
             var stringBuilder = new StringBuilder();
-            foreach (var selectedItem in listView.SelectedItems)
+            foreach (var selectedItem in LogcatManager.ListView.SelectedItems)
             {
                 if (selectedItem is LogEntry log)
                 {
