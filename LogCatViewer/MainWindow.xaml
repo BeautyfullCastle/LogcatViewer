@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogcatViewer"
         mc:Ignorable="d"
-        Title="C# 로그캣 뷰어" Height="720" Width="1280">
+        Title="로그캣 뷰어" Height="720" Width="1280">
 
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:MainWindow.CopyLogCommand}" Executed="CopyCommand_Executed" />
