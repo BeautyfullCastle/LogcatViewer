@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -136,6 +136,49 @@ namespace LogcatViewer
         {
             string command = $"-s {deviceSerial} uninstall {packageName}";
             return ExecuteCommandWithTimeout(command, 60000);
+        }
+
+        public static string? TakeScreenshotAndSaveToFile(string deviceSerial, string savePath)
+        {
+            string devicePath = "/sdcard/screenshot.png";
+            string screenshotCommand = $"-s {deviceSerial} shell screencap -p {devicePath}";
+            string pullCommand = $"-s {deviceSerial} pull {devicePath} \"{savePath}\"";
+            string cleanupCommand = $"-s {deviceSerial} shell rm {devicePath}";
+
+            string result = ExecuteCommand(screenshotCommand);
+            if (result.Contains("error")) return $"스크린샷 캡처 실패: {result}";
+
+            result = ExecuteCommand(pullCommand);
+            if (result.Contains("error")) return $"이미지 파일 가져오기 실패: {result}";
+            
+            ExecuteCommand(cleanupCommand);
+
+            return null; // 성공
+        }
+
+        public static string? TakeScreenshotToTempFile(string deviceSerial, out string? tempFilePath)
+        {
+            tempFilePath = null;
+            string devicePath = "/sdcard/screenshot.png";
+            tempFilePath = Path.GetTempFileName();
+            // Change extension to .png
+            string newTempFilePath = Path.ChangeExtension(tempFilePath, ".png");
+            File.Move(tempFilePath, newTempFilePath);
+            tempFilePath = newTempFilePath;
+
+            string screenshotCommand = $"-s {deviceSerial} shell screencap -p {devicePath}";
+            string pullCommand = $"-s {deviceSerial} pull {devicePath} \"{tempFilePath}\"";
+            string cleanupCommand = $"-s {deviceSerial} shell rm {devicePath}";
+
+            string result = ExecuteCommand(screenshotCommand);
+            if (result.Contains("error")) return $"스크린샷 캡처 실패: {result}";
+
+            result = ExecuteCommand(pullCommand);
+            if (result.Contains("error")) return $"이미지 파일 가져오기 실패: {result}";
+            
+            ExecuteCommand(cleanupCommand);
+
+            return null; // 성공
         }
 
         private static string ExecuteAaptCommand(string command)

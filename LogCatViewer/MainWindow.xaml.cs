@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media; // CompositionTarget을 위해 추가
+using System.IO;
 using System.Windows.Threading;
 
 namespace LogcatViewer
@@ -45,6 +46,7 @@ namespace LogcatViewer
             ClearSearchButton.Click += ClearSearchButton_Click;
             
             InstallApkButton.Click += InstallApkButton_Click;
+            ScreenshotButton.Click += ScreenshotButton_Click;
 
             _deviceCheckTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
             _deviceCheckTimer.Tick += DeviceCheckTimer_Tick;
@@ -60,6 +62,115 @@ namespace LogcatViewer
             
             // 앱 시작 시 자동 스크롤이 켜져있도록 초기화
             AutoScrollToggle_Click(null, new RoutedEventArgs());
+        }
+
+        private void ScreenshotButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogcatManager? selectedManager = null;
+
+            if (_logcatManagers.Count == 0)
+            {
+                MessageBox.Show("연결된 기기가 없습니다.", "알림", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            else if (_logcatManagers.Count == 1)
+            {
+                selectedManager = _logcatManagers[0];
+            }
+            else // 여러 기기가 연결된 경우
+            {
+                selectedManager = DeviceTabs.SelectedItem as LogcatManager;
+                if (selectedManager == null)
+                {
+                    MessageBox.Show("스크린샷을 캡처할 기기를 선택해주세요.", "알림", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+            }
+
+            try
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "캡처가 완료되었습니다.\n스크린샷을 어떻게 처리하시겠습니까?\n\n[예] 버튼: 파일로 저장\n[아니오] 버튼: 클립보드에 복사\n[취소] 버튼: 작업 취소",
+                    "스크린샷 캡처 완료",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question,
+                    MessageBoxResult.Yes,
+                    MessageBoxOptions.DefaultDesktopOnly);
+
+                if (result == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+
+                if (result == MessageBoxResult.Yes) // 파일로 저장
+                {
+                    string picturesPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                    string saveFolder = Path.Combine(picturesPath, "LogcatViewer_Screenshots");
+                    Directory.CreateDirectory(saveFolder); 
+
+                    string fileName = $"{selectedManager.DeviceSerial}_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+                    string savePath = Path.Combine(saveFolder, fileName);
+
+                    string? error = AdbWrapper.TakeScreenshotAndSaveToFile(selectedManager.DeviceSerial, savePath);
+
+                    if (error != null)
+                    {
+                        MessageBox.Show($"스크린샷 저장에 실패했습니다.\n{error}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else
+                    {
+                        MessageBoxResult openFolderResult = MessageBox.Show(
+                            $"스크린샷이 다음 경로에 저장되었습니다:\n{savePath}\n폴더를 여시겠습니까?",
+                            "성공",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Information);
+
+                        if (openFolderResult == MessageBoxResult.Yes)
+                        {
+                            System.Diagnostics.Process.Start("explorer.exe", saveFolder);
+                        }
+                    }
+                }
+                else if (result == MessageBoxResult.No) // 클립보드에 복사
+                {
+                    string? tempFilePath = null;
+                    try
+                    {
+                        string? error = AdbWrapper.TakeScreenshotToTempFile(selectedManager.DeviceSerial, out tempFilePath);
+                        if (error != null)
+                        {
+                            MessageBox.Show($"스크린샷 클립보드 복사에 실패했습니다.\n{error}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+
+                        if (tempFilePath != null && File.Exists(tempFilePath))
+                        {
+                            var image = new System.Windows.Media.Imaging.BitmapImage();
+                            image.BeginInit();
+                            image.UriSource = new Uri(tempFilePath);
+                            image.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                            image.EndInit();
+                            Clipboard.SetImage(image);
+                            MessageBox.Show("스크린샷이 클립보드에 복사되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("임시 스크린샷 파일을 찾을 수 없습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    finally
+                    {
+                        if (tempFilePath != null && File.Exists(tempFilePath))
+                        {
+                            File.Delete(tempFilePath);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"스크린샷 처리 중 예외가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

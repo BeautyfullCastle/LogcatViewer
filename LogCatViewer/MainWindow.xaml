@@ -41,6 +41,8 @@
             <Label Content="검색:" />
             <TextBox x:Name="SearchTextBox" Width="200" TextChanged="SearchTextBox_TextChanged"/>
             <Button x:Name="ClearSearchButton" Content="X" Click="ClearSearchButton_Click"/>
+            <Separator />
+            <Button x:Name="ScreenshotButton" Content="스크린샷" />
         </ToolBar>
 
         <TabControl x:Name="DeviceTabs">
