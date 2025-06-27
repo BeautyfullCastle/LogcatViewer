@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Windows;
 
 namespace LogcatViewer
 {
     public partial class MainWindow
     {
-        private void DeviceCheckTimer_Tick(object sender, EventArgs e)
+        private void DeviceCheckTimer_Tick(object? sender, EventArgs e)
         {
             var connectedDevices = AdbWrapper.GetConnectedDevices();
             var currentSerials = _logcatManagers.Select(m => m.DeviceSerial).ToList();
@@ -27,7 +28,7 @@ namespace LogcatViewer
                 }
                 // 오토 스크롤 클릭 이벤트를 수동으로 호출하여 
                 // 렌더링 핸들러를 다시 연결하고 즉시 스크롤을 수행합니다.
-                AutoScrollToggle_Click(null, null);
+                AutoScrollToggle_Click(null, new RoutedEventArgs());
             }
             var disconnectedDevices = currentSerials.Except(connectedDevices).ToList();
             foreach (var deviceSerial in disconnectedDevices) 
@@ -41,7 +42,7 @@ namespace LogcatViewer
             }
         }
         
-        private void LogEntries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void LogEntries_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             // 로그가 비워졌을 때 (ClearLog 버튼 클릭 시)
             if (e.Action == NotifyCollectionChangedAction.Reset)

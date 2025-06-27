@@ -35,10 +35,10 @@ namespace LogcatViewer
         public static ScrollViewer? ScrollViewer { get; set; }
         
         private readonly string _deviceSerial;
-        private Process _logcatProcess;
+        private Process? _logcatProcess;
         private readonly List<LogEntry> _logBuffer = new List<LogEntry>();
         private readonly DispatcherTimer _batchUpdateTimer;
-        private LogEntry _currentBuildingLog = null;
+        private LogEntry? _currentBuildingLog;
         private readonly object _bufferLock = new object();
 
         private static readonly Regex LogRegex = new Regex(
@@ -55,8 +55,8 @@ namespace LogcatViewer
             _batchUpdateTimer.Tick += BatchUpdateTimer_Tick;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -98,7 +98,7 @@ namespace LogcatViewer
             LogEntries.Clear();
         }
 
-        private void BatchUpdateTimer_Tick(object sender, EventArgs e)
+        private void BatchUpdateTimer_Tick(object? sender, EventArgs e)
         {
             List<LogEntry> itemsToAdd;
             lock (_bufferLock)
@@ -140,7 +140,7 @@ namespace LogcatViewer
                             if (colonIndex > 0 && openParenIndex > colonIndex && newLog.Message.EndsWith(")")) { isContinuation = true; }
                         }
                     }
-                    if (isContinuation) { _currentBuildingLog.AddAdditionalLine(newLog.Message); }
+                    if (isContinuation) { _currentBuildingLog?.AddAdditionalLine(newLog.Message); }
                     else { FlushBuildingLog(); _currentBuildingLog = newLog; }
                 }
                 else { if (_currentBuildingLog != null) { _currentBuildingLog.AddAdditionalLine(e.Data); } }

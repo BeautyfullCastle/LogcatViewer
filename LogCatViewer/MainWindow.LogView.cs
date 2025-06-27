@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;
@@ -10,7 +10,7 @@ namespace LogcatViewer
 {
     public partial class MainWindow
     {
-        private void AutoScrollToggle_Click(object sender, RoutedEventArgs e)
+        private void AutoScrollToggle_Click(object? sender, RoutedEventArgs e)
         {
             if (AutoScrollToggle.IsChecked == true)
             {
@@ -38,10 +38,11 @@ namespace LogcatViewer
             }
         }
         
-        private void LogListView_Loaded(object sender, RoutedEventArgs e)
+        private void LogListView_Loaded(object? sender, RoutedEventArgs e)
         {
             var listView = sender as ListView;
-            var manager = listView?.DataContext as LogcatManager;
+            if (listView == null) return;
+            var manager = listView.DataContext as LogcatManager;
             if (manager == null) return;
 
             LogcatManager.ListView = listView;
@@ -66,13 +67,13 @@ namespace LogcatViewer
             }
         }
         
-        private void LogListView_Unloaded(object sender, RoutedEventArgs e)
+        private void LogListView_Unloaded(object? sender, RoutedEventArgs e)
         {
             LogcatManager.ListView = null;
             LogcatManager.ScrollViewer = null;
         }
 
-        private void ClearLogButton_Click(object sender, RoutedEventArgs e)
+        private void ClearLogButton_Click(object? sender, RoutedEventArgs e)
         {
             if (DeviceTabs.SelectedItem is LogcatManager selectedManager)
             {
@@ -80,7 +81,7 @@ namespace LogcatViewer
             }
         }
         
-        private void CopyCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void CopyCommand_Executed(object? sender, ExecutedRoutedEventArgs e)
         {
             if (LogcatManager.ListView == null) return;
             if (LogcatManager.ListView.SelectedItems.Count == 0) return;
@@ -104,7 +105,7 @@ namespace LogcatViewer
             catch (Exception ex) { Debug.WriteLine($"클립보드 복사 실패: {ex.Message}"); }
         }
         
-        private void LogListView_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void LogListView_SizeChanged(object? sender, SizeChangedEventArgs e)
         {
             if (sender is not ListView listView) return;
             if (listView.View is not GridView gridView) return;

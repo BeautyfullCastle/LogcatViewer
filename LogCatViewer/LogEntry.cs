@@ -8,13 +8,13 @@ namespace LogcatViewer
 {
     public class LogEntry : INotifyPropertyChanged
     {
-        public string DeviceSerial { get; set; }
-        public string Time { get; set; }
-        public string Level { get; set; }
-        public string PID { get; set; }
-        public string TID { get; set; }
-        public string Tag { get; set; }
-        public string Message { get; set; }
+        public string DeviceSerial { get; set; } = string.Empty;
+        public string Time { get; set; } = string.Empty;
+        public string Level { get; set; } = string.Empty;
+        public string PID { get; set; } = string.Empty;
+        public string TID { get; set; } = string.Empty;
+        public string Tag { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
 
         public List<string> AdditionalLines { get; } = new List<string>();
         
@@ -46,9 +46,9 @@ namespace LogcatViewer
         
         public Visibility ExpanderVisibility => HasAdditionalLines ? Visibility.Visible : Visibility.Collapsed;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

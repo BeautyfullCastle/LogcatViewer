@@ -17,7 +17,7 @@ namespace LogcatViewer
         private readonly DispatcherTimer _deviceCheckTimer;
         private readonly ObservableCollection<LogcatManager> _logcatManagers = new();
         
-        private EventHandler _renderingEventHandler;
+        private EventHandler? _renderingEventHandler;
 
         public MainWindow()
         {
@@ -35,7 +35,7 @@ namespace LogcatViewer
             {
                 LogcatManager.ScrollViewer?.ScrollToBottom();
                 ApplyFilter();
-                SearchTextBox_TextChanged(SearchTextBox, null);
+                SearchTextBox_TextChanged(SearchTextBox, new TextChangedEventArgs(e.RoutedEvent, UndoAction.None));
             };
             ClearLogButton.Click += ClearLogButton_Click;
             
@@ -59,7 +59,7 @@ namespace LogcatViewer
             };
             
             // 앱 시작 시 자동 스크롤이 켜져있도록 초기화
-            AutoScrollToggle_Click(null, null);
+            AutoScrollToggle_Click(null, new RoutedEventArgs());
         }
     }
 }

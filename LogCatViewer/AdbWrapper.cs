@@ -16,8 +16,12 @@ namespace LogcatViewer
 
         static AdbWrapper()
         {
-            string assemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            
+            string? assemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrEmpty(assemblyLocation))
+            {
+                throw new DirectoryNotFoundException("Assembly location not found.");
+            }
+
             AdbPath = Path.Combine(assemblyLocation, "adb", "adb.exe");
             if (!File.Exists(AdbPath)) throw new FileNotFoundException("adb.exe를 찾을 수 없습니다!", AdbPath);
             
@@ -37,7 +41,7 @@ namespace LogcatViewer
                 StandardErrorEncoding = Encoding.UTF8
             };
 
-            using (Process process = Process.Start(processInfo))
+            using (Process? process = Process.Start(processInfo))
             {
                 if (process == null)
                 {
@@ -69,7 +73,7 @@ namespace LogcatViewer
                 StandardErrorEncoding = Encoding.UTF8
             };
 
-            using (Process process = Process.Start(processInfo))
+            using (Process? process = Process.Start(processInfo))
             {
                 if (process == null) return "프로세스를 시작할 수 없습니다.";
 
@@ -115,7 +119,7 @@ namespace LogcatViewer
             return ExecuteCommandWithTimeout(command, 300000); 
         }
 
-        public static string GetPackageNameFromApk(string apkPath)
+        public static string? GetPackageNameFromApk(string apkPath)
         {
             string command = $"dump packagename \"{apkPath}\"";
             string output = ExecuteAaptCommand(command);
@@ -146,7 +150,7 @@ namespace LogcatViewer
                 StandardErrorEncoding = Encoding.UTF8
             };
 
-            using (Process process = Process.Start(processInfo))
+            using (Process? process = Process.Start(processInfo))
             {
                 if (process == null) return "aapt2 프로세스를 시작할 수 없습니다.";
                 string output = process.StandardOutput.ReadToEnd();

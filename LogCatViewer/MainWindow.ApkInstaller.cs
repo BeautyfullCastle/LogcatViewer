@@ -76,7 +76,7 @@ namespace LogcatViewer
 
             if (ReinstallCheckBox.IsChecked == true)
             {
-                string packageName = await Task.Run(() => AdbWrapper.GetPackageNameFromApk(apkPath));
+                string? packageName = await Task.Run(() => AdbWrapper.GetPackageNameFromApk(apkPath));
                 if (string.IsNullOrEmpty(packageName))
                 {
                     MessageBox.Show("APK에서 패키지 이름을 가져오는데 실패했습니다. '삭제 후 재설치'를 끄고 다시 시도해보세요.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
