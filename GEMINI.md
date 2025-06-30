@@ -18,7 +18,7 @@ LogcatViewer is a C# WPF application designed to view, filter, and search Androi
 - **`LogCatViewer/`**: The main project directory.
   - **`LogCatViewer.csproj`**: The C# project file, contains dependencies and build settings.
   - **`MainWindow.xaml`**: The main UI layout file for the application.
-  - **`MainWindow.xaml.cs`**: The code-behind for the main window. Logic is split into several partial classes:
+  - **`MainWindow.xaml.cs`**: The code-behind for the main window. Logic is split into several partial classes, including `MainWindow.LogView.cs` which now handles saving filtered logs to a file.
     - `MainWindow.ApkInstaller.cs`
     - `MainWindow.AppManagement.cs`
     - `MainWindow.DeviceEvents.cs`
