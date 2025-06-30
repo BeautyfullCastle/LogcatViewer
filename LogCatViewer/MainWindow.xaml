@@ -43,6 +43,8 @@
             <TextBox x:Name="SearchTextBox" Width="200" TextChanged="SearchTextBox_TextChanged"/>
             <Button x:Name="ClearSearchButton" Content="X" Click="ClearSearchButton_Click"/>
             <Separator />
+            <Button x:Name="SaveLogsButton" Content="로그 저장" Click="SaveLogsButton_Click"/>
+            <Separator />
             <Button x:Name="ScreenshotButton" Content="스크린샷" />
             <Separator />
             <Button x:Name="RecordButton" Content="녹화 시작" />
