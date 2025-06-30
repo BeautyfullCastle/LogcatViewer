@@ -32,6 +32,7 @@
 *   **Parallel Installation**: Install an APK on all connected devices simultaneously, drastically reducing setup time.
 *   **Advanced Install Options**: Includes `aapt2` to automatically extract the package name from the APK, enabling a flawless "Uninstall and Reinstall" feature.
 *   **Real-time Status Indicators**: Each device tab displays the installation status (In Progress, Success, Failure) with a color-coded bar for at-a-glance monitoring.
+*   **APK Detailed Information Viewer**: View detailed information about an APK file (e.g., package name, version, permissions) before installation.
 
 ## 🛠️ Core Technologies
 
@@ -86,6 +87,7 @@
 *   **병렬 동시 설치**: 여러 대의 기기가 연결된 상태에서, 모든 기기에 동시에(병렬로) APK를 설치하여 작업 시간을 획기적으로 단축합니다.
 *   **전문가용 설치 옵션**: `aapt2`를 내장하여 APK 파일에서 **패키지 이름을 자동으로 추출**하며, 이를 통해 **'삭제 후 재설치'** 옵션을 완벽하게 지원합니다.
 *   **실시간 상태 표시**: 각 기기 탭에 설치 진행 상태(진행 중, 성공, 실패)가 색상 막대로 실시간 표시되어 작업 현황을 한눈에 파악할 수 있습니다.
+*   **APK 상세 정보 뷰어**: APK 파일의 상세 정보(예: 패키지 이름, 버전, 권한 등)를 설치 전에 확인할 수 있습니다.
 
 ## 🛠️ 사용 기술 (Core Technologies)
 
