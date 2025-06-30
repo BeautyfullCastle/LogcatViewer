@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media; // CompositionTarget을 위해 추가
 using System.IO;
+using System.Text;
 using System.Windows.Threading;
 
 namespace LogcatViewer
@@ -46,6 +47,7 @@ namespace LogcatViewer
             ClearSearchButton.Click += ClearSearchButton_Click;
             
             InstallApkButton.Click += InstallApkButton_Click;
+            ShowApkInfoButton.Click += ShowApkInfoButton_Click;
             ScreenshotButton.Click += ScreenshotButton_Click;
 
             _deviceCheckTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
@@ -174,6 +176,39 @@ namespace LogcatViewer
             {
                 MessageBox.Show($"스크린샷 처리 중 예외가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ShowApkInfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            string apkPath = ApkPathTextBox.Text.Trim();
+
+            if (string.IsNullOrEmpty(apkPath) || !File.Exists(apkPath))
+            {
+                MessageBox.Show("유효한 APK 파일을 선택하거나 경로를 입력해주세요.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            ApkInfo? apkInfo = AdbWrapper.GetApkDetailInfo(apkPath);
+
+            if (apkInfo == null)
+            {
+                MessageBox.Show("APK 정보를 가져오는 데 실패했습니다. 파일이 손상되었거나 유효한 APK 파일이 아닙니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"패키지 이름: {apkInfo.PackageName}");
+            sb.AppendLine($"앱 이름: {apkInfo.AppLabel}");
+            sb.AppendLine($"버전 이름: {apkInfo.VersionName}");
+            sb.AppendLine($"버전 코드: {apkInfo.VersionCode}");
+            sb.AppendLine($"아이콘 경로: {apkInfo.IconPath}");
+            sb.AppendLine($"최소 SDK 버전: {apkInfo.MinSdkVersion}");
+            sb.AppendLine($"대상 SDK 버전: {apkInfo.TargetSdkVersion}");
+            sb.AppendLine($"\n권한:\n{apkInfo.Permissions}");
+
+            ApkDetailWindow detailWindow = new ApkDetailWindow(sb.ToString());
+            detailWindow.Owner = this;
+            detailWindow.ShowDialog();
         }
     }
 }

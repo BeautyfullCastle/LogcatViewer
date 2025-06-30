@@ -207,6 +207,57 @@ namespace LogcatViewer
             return ExecuteCommand(command);
         }
 
+        public static ApkInfo? GetApkDetailInfo(string apkPath)
+        {
+            if (!File.Exists(apkPath))
+            {
+                return null;
+            }
+
+            string command = $"dump badging \"{apkPath}\"";
+            string output = ExecuteAaptCommand(command);
+
+            ApkInfo apkInfo = new ApkInfo();
+
+            // Package Name
+            Match match = Regex.Match(output, "package: name='([^']+)'");
+            if (match.Success) apkInfo.PackageName = match.Groups[1].Value;
+
+            // Version Name
+            match = Regex.Match(output, "versionName='([^']+)'");
+            if (match.Success) apkInfo.VersionName = match.Groups[1].Value;
+
+            // Version Code
+            match = Regex.Match(output, "versionCode='([^']+)'");
+            if (match.Success) apkInfo.VersionCode = match.Groups[1].Value;
+
+            // Application Label (App Name)
+            match = Regex.Match(output, "application: label='([^']+)'");
+            if (match.Success) apkInfo.AppLabel = match.Groups[1].Value;
+
+            // Icon Path
+            match = Regex.Match(output, "application-icon-[0-9]+:'([^']+)'");
+            if (match.Success) apkInfo.IconPath = match.Groups[1].Value;
+
+            // Min SDK Version
+            match = Regex.Match(output, "sdkVersion:'([^']+)'");
+            if (match.Success) apkInfo.MinSdkVersion = match.Groups[1].Value;
+
+            // Target SDK Version
+            match = Regex.Match(output, "targetSdkVersion:'([^']+)'");
+            if (match.Success) apkInfo.TargetSdkVersion = match.Groups[1].Value;
+
+            // Permissions (simplified, just listing them)
+            StringBuilder permissions = new StringBuilder();
+            foreach (Match permMatch in Regex.Matches(output, "uses-permission: name='([^']+)'"))
+            {
+                permissions.AppendLine(permMatch.Groups[1].Value);
+            }
+            apkInfo.Permissions = permissions.ToString().Trim();
+
+            return apkInfo;
+        }
+
         private static string ExecuteAaptCommand(string command)
         {
             ProcessStartInfo processInfo = new ProcessStartInfo(AaptPath, command)
