@@ -21,6 +21,10 @@
 *   **Intelligent Auto-Scroll**: Keeps the view at the latest log but smartly pauses when you scroll up to check older entries, so you don't lose your place.
 *   **Perfect Clipboard Copy**: Copy logs using `Ctrl+C` or the context menu. Grouped/folded logs are copied completely, including all hidden lines.
 *   **Clear Logs**: Cleanly clear all logs in the current tab with a single click.
+*   **Log Truncation**: Limits the number of log entries in `LogcatManager.cs` to optimize memory usage.
+*   **Save Filtered Logs**: Added functionality to save currently filtered logs to a text file.
+*   **Screenshot**: Capture a screenshot of the connected Android device.
+*   **Screen Recording**: Record the screen of the connected Android device.
 
 ### 📲 APK Installer
 
@@ -71,6 +75,10 @@
 *   **지능형 자동 스크롤**: '자동 스크롤'을 켜면 항상 최신 로그를 보여주지만, 사용자가 직접 위로 스크롤하여 이전 로그를 확인하는 순간, 자동 스크롤 기능은 사용자를 방해하지 않도록 잠시 멈춥니다.
 *   **완벽한 클립보드 복사**: `Ctrl+C` 또는 마우스 오른쪽 클릭 메뉴를 통해 로그를 복사할 수 있으며, 여러 줄로 그룹화된 로그(스택 트레이스)의 경우 접혀있는 모든 내용까지 완벽하게 복사합니다.
 *   **로그 지우기**: 버튼 클릭 한 번으로 현재 탭의 모든 로그를 깔끔하게 지울 수 있습니다.
+*   **로그 수 제한**: `LogcatManager.cs`에 로그 항목 수를 제한하는 기능이 추가되어 메모리 사용량을 최적화합니다.
+*   **필터링된 로그 저장**: 현재 필터링된 로그를 텍스트 파일로 저장하는 기능이 추가되었습니다.
+*   **스크린샷**: 연결된 안드로이드 기기의 스크린샷을 캡처합니다.
+*   **화면 녹화**: 연결된 안드로이드 기기의 화면을 녹화합니다.
 
 ### 📲 APK 설치 도구 (APK Installer)
 
