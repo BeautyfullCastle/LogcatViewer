@@ -20,12 +20,16 @@ LogcatViewer is a C# WPF application designed to view, filter, and search Androi
   - **`MainWindow.xaml`**: The main UI layout file for the application.
   - **`MainWindow.xaml.cs`**: The code-behind for the main window. Logic is split into several partial classes:
     - `MainWindow.ApkInstaller.cs`
+    - `MainWindow.AppManagement.cs`
     - `MainWindow.DeviceEvents.cs`
     - `MainWindow.Filtering.cs`
     - `MainWindow.LogView.cs`
     - `MainWindow.Search.cs`
+    - `MainWindow.Recording.cs`
+    - `MainWindow.Helpers.cs`
+  - **`AppInfo.cs`**: The data model representing an installed application.
   - **`LogcatManager.cs`**: Handles starting and stopping the `adb logcat` process and parsing its output.
-  - **`AdbWrapper.cs`**: A wrapper class for executing commands with the `adb.exe` tool.
+  - **`AdbWrapper.cs`**: A wrapper class for executing commands with the `adb.exe` tool. Includes methods for installing/uninstalling APKs, taking screenshots, starting/stopping screen recordings, and retrieving installed package information.
   - **`LogEntry.cs`**: The data model representing a single logcat line.
   - **`adb/`**: Contains the bundled `adb.exe` and its required libraries. The application is self-contained.
   - **`aapt/`**: Contains the bundled `aapt2.exe` for parsing APK information.
