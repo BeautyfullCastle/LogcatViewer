@@ -58,10 +58,13 @@ namespace LogcatViewer
                 {
                     CompositionTarget.Rendering -= _renderingEventHandler;
                 }
+                MainWindow_Closing(s, e);
             };
             
             // 앱 시작 시 자동 스크롤이 켜져있도록 초기화
             AutoScrollToggle_Click(null, new RoutedEventArgs());
+
+            InitializeRecording();
         }
 
         private void ScreenshotButton_Click(object sender, RoutedEventArgs e)

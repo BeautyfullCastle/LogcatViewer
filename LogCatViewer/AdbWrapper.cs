@@ -142,7 +142,7 @@ namespace LogcatViewer
         {
             string devicePath = "/sdcard/screenshot.png";
             string screenshotCommand = $"-s {deviceSerial} shell screencap -p {devicePath}";
-            string pullCommand = $"-s {deviceSerial} pull {devicePath} \"{savePath}\"";
+            string pullCommand = $"-s {deviceSerial} pull \"{devicePath}\" \"{savePath}\"";
             string cleanupCommand = $"-s {deviceSerial} shell rm {devicePath}";
 
             string result = ExecuteCommand(screenshotCommand);
@@ -167,7 +167,7 @@ namespace LogcatViewer
             tempFilePath = newTempFilePath;
 
             string screenshotCommand = $"-s {deviceSerial} shell screencap -p {devicePath}";
-            string pullCommand = $"-s {deviceSerial} pull {devicePath} \"{tempFilePath}\"";
+            string pullCommand = $"-s {deviceSerial} pull \"{devicePath}\" \"{tempFilePath}\"";
             string cleanupCommand = $"-s {deviceSerial} shell rm {devicePath}";
 
             string result = ExecuteCommand(screenshotCommand);
@@ -179,6 +179,32 @@ namespace LogcatViewer
             ExecuteCommand(cleanupCommand);
 
             return null; // 성공
+        }
+
+        public static Process? StartScreenRecordingProcess(string deviceSerial, string devicePath)
+        {
+            string command = $"-s {deviceSerial} shell screenrecord {devicePath}";
+            ProcessStartInfo processInfo = new ProcessStartInfo(AdbPath, command)
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+
+            return Process.Start(processInfo);
+        }
+
+        public static string PullFile(string deviceSerial, string devicePath, string localPath)
+        {
+            string command = $"-s {deviceSerial} pull \"{devicePath}\" \"{localPath}\"";
+            return ExecuteCommand(command);
+        }
+
+        public static string DeleteFile(string deviceSerial, string devicePath)
+        {
+            string command = $"-s {deviceSerial} shell rm \"{devicePath}\"";
+            return ExecuteCommand(command);
         }
 
         private static string ExecuteAaptCommand(string command)
