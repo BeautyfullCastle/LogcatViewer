@@ -16,5 +16,18 @@ namespace LogcatViewer
                 collection.Add(item);
             }
         }
+
+        public static void RemoveRange<T>(this ObservableCollection<T> collection, int index, int count)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (index + count > collection.Count) throw new ArgumentOutOfRangeException(nameof(count));
+
+            for (int i = 0; i < count; i++)
+            {
+                collection.RemoveAt(index);
+            }
+        }
     }
 }

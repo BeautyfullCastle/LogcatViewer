@@ -40,6 +40,7 @@ namespace LogcatViewer
         private readonly DispatcherTimer _batchUpdateTimer;
         private LogEntry? _currentBuildingLog;
         private readonly object _bufferLock = new object();
+        private const int MaxLogEntries = 10000; // 최대 로그 항목 수
 
         private static readonly Regex LogRegex = new Regex(
             @"^(?<time>\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3})\s+(?<pid>\d+)\s+(?<tid>\d+)\s+(?<level>[VDIWEF])\s+(?<tag>.*?)\s*:" +
@@ -111,6 +112,11 @@ namespace LogcatViewer
             if (itemsToAdd.Count > 0)
             {
                 LogEntries.AddRange(itemsToAdd);
+                // 최대 로그 항목 수를 초과하면 오래된 로그를 제거합니다.
+                if (LogEntries.Count > MaxLogEntries)
+                {
+                    LogEntries.RemoveRange(0, LogEntries.Count - MaxLogEntries);
+                }
             }
         }
 
