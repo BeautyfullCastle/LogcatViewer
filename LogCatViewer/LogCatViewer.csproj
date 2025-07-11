@@ -8,6 +8,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
         <ApplicationIcon>app_icon.ico</ApplicationIcon>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+        <DebugType>pdbonly</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE</DefineConstants>
+        <PublishSingleFile>true</PublishSingleFile>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <PublishReadyToRun>true</PublishReadyToRun>
     </PropertyGroup>
 
     <ItemGroup>
