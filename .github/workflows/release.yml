@@ -1,0 +1,68 @@
+name: .NET Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 'v'로 시작하는 태그에 대해 실행 (예: v1.0, v2.1.1)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # GitHub Releases에 업로드하기 위해 필요
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x' # 프로젝트의 .NET 버전에 맞게 수정
+
+    - name: Restore dependencies
+      run: dotnet restore LogCatViewer/LogCatViewer.csproj
+
+    - name: Build
+      run: dotnet publish LogCatViewer/LogCatViewer.csproj --configuration Release --runtime win-x64 --self-contained true /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false
+
+    - name: Archive production artifacts
+      shell: bash
+      run: |
+        ARTIFACT_NAME="LogCatViewer-${{ github.ref_name }}"
+        RELEASE_DIR="LogCatViewer/bin/Release/net8.0-windows/win-x64/publish"
+
+        # 실행 파일 이름 확인 (프로젝트 설정에 따라 다를 수 있음)
+        EXECUTABLE_NAME="LogCatViewer.exe"
+
+        # 실행 파일이 있는지 확인
+        if [ ! -f "${RELEASE_DIR}/${EXECUTABLE_NAME}" ]; then
+          echo "Error: Executable ${EXECUTABLE_NAME} not found in ${RELEASE_DIR}"
+          ls -R "${RELEASE_DIR}" # 디렉토리 구조 출력 (디버깅용)
+          exit 1
+        fi
+
+        # 필요한 파일만 압축 (예: 실행 파일, DLL 등)
+        # 여기서는 publish 디렉토리 전체를 압축합니다. 필요에 따라 수정하세요.
+        zip -r "${ARTIFACT_NAME}.zip" "${RELEASE_DIR}"
+        echo "ARTIFACT_PATH=${ARTIFACT_NAME}.zip" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.ARTIFACT_PATH }}
+        asset_name: ${{ env.ARTIFACT_PATH }}
+        asset_content_type: application/zip
