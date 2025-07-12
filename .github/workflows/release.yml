@@ -23,7 +23,7 @@ jobs:
       run: dotnet restore LogCatViewer/LogCatViewer.csproj
 
     - name: Build
-      run: dotnet publish LogCatViewer/LogCatViewer.csproj --configuration Release --runtime win-x64 --self-contained true /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false
+      run: dotnet publish -c Release -r win-x64 --self-contained true
 
     - name: Archive production artifacts
       shell: bash
