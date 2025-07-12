@@ -16,11 +16,7 @@ namespace LogcatViewer
 
         static AdbWrapper()
         {
-            string? assemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            if (string.IsNullOrEmpty(assemblyLocation))
-            {
-                throw new DirectoryNotFoundException("Assembly location not found.");
-            }
+            string assemblyLocation = AppContext.BaseDirectory;
 
             AdbPath = Path.Combine(assemblyLocation, "adb", "adb.exe");
             if (!File.Exists(AdbPath)) throw new FileNotFoundException("adb.exe를 찾을 수 없습니다!", AdbPath);

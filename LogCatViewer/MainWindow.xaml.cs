@@ -60,7 +60,10 @@ namespace LogcatViewer
                 {
                     CompositionTarget.Rendering -= _renderingEventHandler;
                 }
-                MainWindow_Closing(s, e);
+                if (s != null)
+                {
+                    MainWindow_Closing(s, e);
+                }
             };
             
             // 앱 시작 시 자동 스크롤이 켜져있도록 초기화
