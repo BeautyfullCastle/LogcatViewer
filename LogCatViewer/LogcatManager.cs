@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -30,9 +30,8 @@ namespace LogcatViewer
             }
         }
 
-        public static ListView? ListView { get; set; }
-        
-        public static ScrollViewer? ScrollViewer { get; set; }
+        // 인스턴스별 ScrollViewer (탭 전환 시에도 각 탭의 ScrollViewer 유지)
+        public ScrollViewer? ScrollViewer { get; set; }
         
         private readonly string _deviceSerial;
         private Process? _logcatProcess;
@@ -67,6 +66,11 @@ namespace LogcatViewer
             AdbWrapper.ExecuteCommand($"-s {_deviceSerial} logcat -c");
             _batchUpdateTimer.Start();
             
+            StartLogcatProcess();
+        }
+        
+        private void StartLogcatProcess()
+        {
             var command = $"-s {_deviceSerial} logcat -v threadtime";
             var processInfo = new ProcessStartInfo(AdbWrapper.AdbPath, command) {
                 CreateNoWindow = true, UseShellExecute = false,
@@ -76,17 +80,44 @@ namespace LogcatViewer
             _logcatProcess = new Process { StartInfo = processInfo, EnableRaisingEvents = true };
             _logcatProcess.OutputDataReceived += OnOutputDataReceived;
             _logcatProcess.ErrorDataReceived += OnOutputDataReceived;
+            _logcatProcess.Exited += OnProcessExited;
             _logcatProcess.Start();
             _logcatProcess.BeginOutputReadLine();
             _logcatProcess.BeginErrorReadLine();
+        }
+        
+        private void OnProcessExited(object? sender, EventArgs e)
+        {
+            // 프로세스가 예기치 않게 종료되면 자동 재시작 (UI 스레드에서 실행)
+            System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+            {
+                if (_batchUpdateTimer.IsEnabled) // 아직 Stop()이 호출되지 않은 경우에만
+                {
+                    try
+                    {
+                        _logcatProcess?.Dispose();
+                        _logcatProcess = null;
+                        StartLogcatProcess();
+                    }
+                    catch
+                    {
+                        // 재시작 실패 시 무시 (기기가 연결 해제된 경우 등)
+                    }
+                }
+            });
         }
 
         public void Stop()
         {
             _batchUpdateTimer.Stop();
             lock(_bufferLock) { FlushBuildingLog(); }
-            if (_logcatProcess != null && !_logcatProcess.HasExited) _logcatProcess.Kill();
-            _logcatProcess?.Dispose();
+            if (_logcatProcess != null)
+            {
+                _logcatProcess.Exited -= OnProcessExited;
+                if (!_logcatProcess.HasExited) _logcatProcess.Kill();
+                _logcatProcess.Dispose();
+            }
+            _logcatProcess = null;
         }
         
         public void ClearLogs()
