@@ -22,11 +22,22 @@ namespace LogcatViewer
                 if (_renderingEventHandler == null)
                 {
                     // 1. 렌더링 이벤트 핸들러를 연결합니다.
-                    _renderingEventHandler = (s, args) => { LogcatManager.ScrollViewer?.ScrollToBottom(); };
+                    _renderingEventHandler = (s, args) => 
+                    { 
+                        // 현재 선택된 탭의 LogcatManager의 ScrollViewer를 사용
+                        if (DeviceTabs.SelectedItem is LogcatManager manager)
+                        {
+                            manager.ScrollViewer?.ScrollToBottom();
+                        }
+                    };
                     CompositionTarget.Rendering += _renderingEventHandler;
                 }
 
-                LogcatManager.ScrollViewer?.ScrollToBottom();
+                // 현재 선택된 탭의 ScrollViewer를 스크롤
+                if (DeviceTabs.SelectedItem is LogcatManager selectedManager)
+                {
+                    selectedManager.ScrollViewer?.ScrollToBottom();
+                }
             }
             else
             {
@@ -46,9 +57,9 @@ namespace LogcatViewer
             var manager = listView.DataContext as LogcatManager;
             if (manager == null) return;
 
-            LogcatManager.ListView = listView;
             var scrollViewer = FindVisualChild<ScrollViewer>(listView);
-            LogcatManager.ScrollViewer = scrollViewer;
+            // 각 LogcatManager 인스턴스에 ScrollViewer를 저장 (static 제거)
+            manager.ScrollViewer = scrollViewer;
             if (scrollViewer != null)
             {
                 scrollViewer.ScrollChanged += (s, args) =>
@@ -71,8 +82,8 @@ namespace LogcatViewer
 
         private void LogListView_Unloaded(object? sender, RoutedEventArgs e)
         {
-            LogcatManager.ListView = null;
-            LogcatManager.ScrollViewer = null;
+            // Unloaded 시 ScrollViewer를 null로 만들지 않음 - 탭 전환 시에도 유지
+            // 각 LogcatManager 인스턴스가 자신의 ScrollViewer를 계속 보유
         }
 
         private void ClearLogButton_Click(object? sender, RoutedEventArgs e)
@@ -85,10 +96,17 @@ namespace LogcatViewer
 
         private void CopyCommand_Executed(object? sender, ExecutedRoutedEventArgs e)
         {
-            if (LogcatManager.ListView == null) return;
-            if (LogcatManager.ListView.SelectedItems.Count == 0) return;
+            // 현재 선택된 탭에서 ListView를 가져옴
+            if (DeviceTabs.SelectedItem is not LogcatManager selectedManager) return;
+            
+            // TabControl에서 현재 선택된 탭의 ContentPresenter를 찾아 ListView를 가져옴
+            var tabContent = DeviceTabs.Template.FindName("PART_SelectedContentHost", DeviceTabs) as ContentPresenter;
+            var listView = tabContent != null ? FindVisualChild<ListView>(tabContent) : null;
+            
+            if (listView == null || listView.SelectedItems.Count == 0) return;
+            
             var stringBuilder = new StringBuilder();
-            foreach (var selectedItem in LogcatManager.ListView.SelectedItems)
+            foreach (var selectedItem in listView.SelectedItems)
             {
                 if (selectedItem is LogEntry log)
                 {

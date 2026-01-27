@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -35,7 +35,11 @@ namespace LogcatViewer
             ErrorToggle.Click += (s, e) => ApplyFilter();
             DeviceTabs.SelectionChanged += (s, e) => 
             {
-                LogcatManager.ScrollViewer?.ScrollToBottom();
+                // 현재 선택된 탭의 LogcatManager의 ScrollViewer를 사용
+                if (DeviceTabs.SelectedItem is LogcatManager manager)
+                {
+                    manager.ScrollViewer?.ScrollToBottom();
+                }
                 ApplyFilter();
                 SearchTextBox_TextChanged(SearchTextBox, new TextChangedEventArgs(e.RoutedEvent, UndoAction.None));
             };
